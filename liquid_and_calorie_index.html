@@ -357,7 +357,7 @@
         <p> <div id="barchart_calorie"></div>
       {% endif %}
 
-      <form action="/storeliqData" method="post" oninput="contentdiff.value=parseInt(lastcontent.value)-parseInt(recentcontent.value)">
+      <form action="/storeData" method="post" oninput="contentdiff.value=parseInt(lastcontent.value)-parseInt(recentcontent.value)">
         <p> <input type="hidden" value="{{ whichtracker }}" name="liquidOrCaloriesHiddenInput" id="liquidOrCaloriesHiddenInput" />
         <input type="hidden" value="{{ counter_liquid }}" id="indexer_liquid" name="indexer_liquid" />
         <input type="hidden" value="{{ counter_calorie }}" id="indexer_calorie" name="indexer_calorie" />

@@ -110,7 +110,7 @@ class MainPage(webapp2.RequestHandler):
     path = os.path.join(os.path.dirname(__file__), 'liquid_and_calorie_index.html')
     self.response.out.write(template.render(path, template_values))
 
-class KidneyStones(webapp2.RequestHandler):
+class FoodContent(webapp2.RequestHandler):
   def post(self):
 
     ''' date()-formatted date (for passing to Javascript) '''
@@ -146,5 +146,5 @@ class KidneyStones(webapp2.RequestHandler):
 
 application = webapp2.WSGIApplication([
   ('/', MainPage),
-  ('/storeliqData', KidneyStones)
+  ('/storeData', FoodContent)
 ], debug=False)
