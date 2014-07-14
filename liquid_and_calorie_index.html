@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta name="Author" content="Scott Trocchia">
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title> Tracking Food and Drink Intake </title>
+
+      <!-- datepicker -->
+      <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+      <script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+      <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
+
+      <!-- Google Charts API -->
+      <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
+      <!-- Bootstrap core CSS -->
+      <link href="../static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+      <!-- my own CSS -->
+      <link href="../static/liquid-calorie.css" rel="stylesheet">
+
+      <script type="text/javascript">
+
+        // Load the Visualization API and the piechart package.
+        google.load('visualization', '1.0', {'packages':['corechart']});
+
+        // Set a callback to run when the Google Visualization API is loaded.
+        google.setOnLoadCallback(drawChart);
+
+        // Callback that creates and populates a data table,
+        // instantiates the pie chart, passes in the data and
+        // draws it.
+        function drawChart() {
+
+          var JcurrDate_full_liquid, JcurrDate_liquid;
+          var JcurrDate_full_calorie, JcurrDate_calorie;
+
+          if (document.getElementById('indexer_liquid').value != 0)
+          {
+            var var1 = document.getElementById('liquid_dateEntered').value;
+            JcurrDate_full_liquid = new Date( document.getElementById('liquid_dateEntered').value );
+            JcurrDate_liquid = ( "0" + (JcurrDate_full_liquid.getMonth()+1) ).slice(-2) + "/" + ("0" + JcurrDate_full_liquid.getDate()).slice(-2) + "/" + JcurrDate_full_liquid.getFullYear();
+          }
+          else
+          {
+          }
+
+          if (document.getElementById('indexer_calorie').value != 0)
+          {
+            var var2 = document.getElementById('calorie_dateEntered').value;
+            JcurrDate_full_calorie = new Date( document.getElementById('calorie_dateEntered').value );
+            JcurrDate_calorie = ( "0" + (JcurrDate_full_calorie.getMonth()+1) ).slice(-2) + "/" + ("0" + JcurrDate_full_calorie.getDate()).slice(-2) + "/" + JcurrDate_full_calorie.getFullYear();
+          }
+          else
+          {
+          }
+
+          // Create the data table.
+          var data_liquid = new google.visualization.DataTable();
+          var data_calorie = new google.visualization.DataTable();
+
+          data_liquid.addColumn('string', 'Date');
+          data_calorie.addColumn('string', 'Date');
+
+          // IF LIQUID
+          //    
+          var Jprevval_liquid = parseInt(document.getElementById('liquid_diffentry').value);
+
+          if ( parseInt(document.getElementById('liquidFirstElement').value) != 0 )
+          {
+            var Jtarget_liquid = parseInt(document.getElementById('liquidFirstElement').value) + parseInt(document.getElementById('liquidDiffFirstElement').value);
+
+            data_liquid.addColumn('number', 'Target ounces' );
+            data_liquid.addColumn('number', 'Ounces remaining');
+            data_liquid.addRows([
+              [JcurrDate_liquid, Jtarget_liquid, Jprevval_liquid],
+            ]);
+
+            var minVal_liquid;
+            if(Jprevval_liquid < 0)
+            {
+              minVal_liquid = Jprevval_liquid - 10;
+            }
+            else
+            { 
+              minVal_liquid = 0;
+            }
+
+            // Set chart options       
+            var options_liquid = {//'title':'How Much Pizza I Ate Last Night',
+                                  'width':500,
+                                  'height':400,
+                                  vAxis: {
+                                    viewWindow: {
+                                      min: minVal_liquid,
+                                      max: Jtarget_liquid + 20
+                                    }
+                                  },
+                                  orientation: 'horizontal',
+                                };
+
+            var chart_liquid = new google.visualization.BarChart(document.getElementById('barchart_liquid'));
+            chart_liquid.draw(data_liquid, options_liquid);
+          }
+          else
+          {
+          }
+
+          // IF CALORIE
+          //
+          var Jprevval_calorie = parseInt(document.getElementById('calorie_diffentry').value);
+
+          if ( parseInt(document.getElementById('calorieFirstElement').value) != 0 )
+          {
+            var Jtarget_calorie = parseInt(document.getElementById('calorieFirstElement').value) + parseInt(document.getElementById('calorieDiffFirstElement').value);
+
+            data_calorie.addColumn('number', 'Target calories' );
+            data_calorie.addColumn('number', 'Calories remaining');
+            data_calorie.addRows([
+              [JcurrDate_calorie, Jtarget_calorie, Jprevval_calorie],
+            ]);
+
+            var minVal_calorie;
+            if(Jprevval_calorie < 0)
+            {
+              minVal_calorie = Jprevval_calorie - 10;
+            }
+            else
+            {
+              minVal_calorie = 0;
+            }
+
+            // Set chart options
+            var options_calorie = {//'title':'How Much Pizza I Ate Last Night',
+                                  'width':500,
+                                  'height':400,
+                                  vAxis: {
+                                    viewWindow: {
+                                      min: minVal_calorie,
+                                      max: Jtarget_calorie + 20
+                                    }
+                                  },
+                                  orientation: 'horizontal',
+                                };
+            // Instantiate and draw our charts, passing in some options.
+            var chart_calorie = new google.visualization.BarChart(document.getElementById('barchart_calorie'));
+            chart_calorie.draw(data_calorie, options_calorie);
+          }
+          else
+          {
+          }
+        }
+      </script>
+
+      <script language="javascript">
+        $(document).ready(function() { 
+          $( "#datepicker" ).datepicker();
+
+          $( "#datepicker" ).change(function() {
+
+            if($('#liquidOrCalories1').is(':checked'))
+            {
+              var Jdate_old, Jdate_new; 
+              Jdate_old = document.getElementById('liquid_dateEntered').value;
+              Jdate_new = document.getElementById('datepicker').value;
+
+              //alert('Jdate_old liquid is ' + Jdate_old);
+              //alert('Jdate_new liquid is ' + Jdate_new);
+
+              if (Jdate_old == Jdate_new)
+              {
+              }
+              else
+              {
+                document.getElementById('mutableLabel').innerHTML = "Target liquid intake for today (in oz.):";
+                document.getElementById('lastcontent').value = '';
+                document.getElementById('lastcontent').placeholder = "Enter ounces of liquid you intend to drink today";
+                document.getElementById('lastcontent').style.width = "400px";
+              }
+            }
+
+            if($('#liquidOrCalories2').is(':checked'))
+            {
+              var Jdate_old, Jdate_new; 
+              Jdate_old = document.getElementById('liquid_dateEntered').value;
+              Jdate_new = document.getElementById('datepicker').value;
+
+              //alert('Jdate_old calorie is ' + Jdate_old);
+              //alert('Jdate_new calorie is ' + Jdate_new);
+
+              if (Jdate_old == Jdate_new)
+              {
+              }
+              else
+              {
+                document.getElementById('mutableLabel').innerHTML = "Target calorie intake for today:";
+                document.getElementById('lastcontent').value = '';
+                document.getElementById('lastcontent').placeholder = "Enter number of calories you intend to eat today";
+                document.getElementById('lastcontent').style.width = "400px";
+              }
+            }
+          });
+
+          $('#liquidOrCalories1').click( function() {
+
+            var JliquidOrCalories1 = document.getElementById('liquidOrCalories1');
+            $('#liquidOrCaloriesHiddenInput').val(JliquidOrCalories1.value);
+            var JprevOrFirst_liquid = document.getElementById('pOF_liquid').value;
+
+            if (JprevOrFirst_liquid == "first")
+            {
+              document.getElementById('mutableLabel').innerHTML = "Target liquid intake for today (in oz.):";
+              document.getElementById('lastcontent').placeholder = "Enter ounces of liquid you intend to drink today";
+              document.getElementById('lastcontent').style.width = "400px";
+            }
+            else
+            {
+              document.getElementById('mutableLabel').innerHTML = "Last amount of liquid (in oz.) you drank today was:";
+              document.getElementById('lastcontent').style.width = "150px";
+              document.getElementById('datepicker').value = document.getElementById('liquid_dateEntered').value;
+            }
+
+            document.getElementById('mutableDateLabel').innerHTML = "Today's date is:";
+            document.getElementById('mutableLabel_1_2').innerHTML = "Enter recent liquid intake (oz.):";
+            document.getElementById('mutableLabel_1_3').innerHTML = "Remaining liquid intake for today (oz.):";
+
+            document.getElementById('datepicker').style.visibility = "visible";
+            document.getElementById('recentcontent').style.visibility = "visible";
+            document.getElementById('lastcontent').style.visibility = "visible";
+            document.getElementById('contentdiff').style.visibility = "visible";
+            document.getElementById('storebutton').style.visibility = "visible";
+
+            $('#lastcontent').val( parseInt(document.getElementById('liquid_diffentry').value) );
+          });
+
+          $('#liquidOrCalories2').click( function() {
+            var JliquidOrCalories2 = document.getElementById('liquidOrCalories2');
+            $('#liquidOrCaloriesHiddenInput').val(JliquidOrCalories2.value);
+            var JprevOrFirst_calorie = document.getElementById('pOF_calorie').value;
+
+            if (JprevOrFirst_calorie == "first")
+            {
+              document.getElementById('mutableLabel').innerHTML = "Target caloric intake for today:";
+              document.getElementById('lastcontent').placeholder = "Enter number of calories you intend to eat today";
+              document.getElementById('lastcontent').style.width = "400px";
+            }
+            else
+            {
+              document.getElementById('mutableLabel').innerHTML = "Last number of calories you ate today was:";
+              document.getElementById('lastcontent').style.width = "150px";
+              document.getElementById('datepicker').value = document.getElementById('calorie_dateEntered').value;
+            }
+
+            document.getElementById('mutableDateLabel').innerHTML = "Today's date is:";
+            document.getElementById('mutableLabel_1_2').innerHTML = "Enter recent calories consumed:";
+            document.getElementById('mutableLabel_1_3').innerHTML = "Remaining calories for today:";
+
+            document.getElementById('datepicker').style.visibility = "visible";
+            document.getElementById('recentcontent').style.visibility = "visible";
+            document.getElementById('lastcontent').style.visibility = "visible";
+            document.getElementById('contentdiff').style.visibility = "visible";
+            document.getElementById('storebutton').style.visibility = "visible";
+
+            $('#lastcontent').val( parseInt(document.getElementById('calorie_diffentry').value) ); 
+          });
+ 
+          if (document.getElementById('indexer_liquid').value != 0)
+          {
+            document.getElementById('liquidLabel').innerHTML = "LIQUID";
+          }
+
+          if( document.getElementById('indexer_calorie').value != 0)
+          {
+            document.getElementById('calorieLabel').innerHTML = "CALORIES";
+          }
+        });
+
+      </script>
+
+    </head>
+
+    <body>
+
+      <form>
+        Username: <input value="{{ whichuser }}" name="user_name">
+        <input type="submit" value="switch">
+      </form>
+      <br>
+      <hr>
+
+      {% if user_name %}
+        <div class="bs-example"> Previous 10 liquid and calorie entries, in order from oldest to most recent, for <b>{{ user_name }}</b> are: </div>
+      {% else %}
+        <div class="bs-example"> Previous 10 liquid and calorie entries, in order from oldest to most recent, for <b>an anonymous user</b> are: </div>
+      {% endif %}
+
+      {% if counter_liquid == 0 %}
+        <p> <input type="hidden" id="liquid_diffentry" value="" />
+        <p> <input type="hidden" id="liquidFirstElement" value="0" />
+        <p> <input type="hidden" id="liquidDiffFirstElement" value="0" />
+      {% endif %}
+
+      <br>
+      <div class="bs-example" id="liquidLabel"> <b></b> </div>
+      {% for liquid in liquids %}
+        <div class="bs-example panel panel-default" >
+          {% if liquid.indexer == 1 %}
+            <p> <input type="hidden" id="liquidFirstElement" value="{{ liquid.content }}" />
+            <p> <input type="hidden" id="liquidDiffFirstElement" value="{{ liquid.content_diff }}" />
+          {% endif %}
+          {% if liquid.indexer == counter_liquid %}
+            <!-- <p> <input type="text" id="liquid_dateEntered" value="{{ liquid.date_entered }}" /> -->
+          {% endif %}
+          <p> {{ liquid.indexer }}) date = {{ liquid.date_entered}} | Ounces of liquid you just drank: {{ liquid.content }} | Remaining ounces: {{ liquid.content_diff }}
+          <p> <input type="hidden" id="liquid_diffentry" value="{{ liquid.content_diff }}" />
+          <p> <input type="hidden" id="liquid_dateEntered" value="{{ liquid.date_entered }}" />
+        </div>
+      {% endfor %}
+
+      {% if counter_calorie == 0 %}
+        <p> <input type="hidden" id="calorie_diffentry" value="" />
+        <p> <input type="hidden" id="calorieFirstElement" value="0" />
+        <p> <input type="hidden" id="calorieDiffFirstElement" value="0" />
+      {% endif %}
+
+      <br>
+      <div class="bs-example" id="calorieLabel"> <b></b> </div>
+      {% for calorie in calories %}
+        <div class="bs-example panel panel-default" >
+          {% if calorie.indexer == 1 %}
+            <p> <input type="hidden" id="calorieFirstElement" value="{{ calorie.content }}" />
+            <p> <input type="hidden" id="calorieDiffFirstElement" value="{{ calorie.content_diff }}" />
+          {% endif %}
+          {% if calorie.indexer == counter_calorie %}
+            <!-- <p> <input type="text" id="calorie_dateEntered" value="{{ calorie.date_entered }}" /> -->
+          {% endif %}
+          <p> {{ calorie.indexer }}) date = {{ calorie.date_entered}} | Calories you just ate: {{ calorie.content }} | Remaining calories: {{ calorie.content_diff }}
+          <p> <input type="hidden" id="calorie_diffentry" value="{{ calorie.content_diff }}" />
+          <p> <input type="hidden" id="calorie_dateEntered" value="{{ calorie.date_entered }}" />
+        </div>
+      {% endfor %}
+
+      <hr>
+      <form>
+        <div class="form-group">
+          <p> <input type="radio" id="liquidOrCalories1" name="liquidOrCalories" value="Liquid Intake" /> Liquid Intake - for people who have suffered through kidney stones, and for those who are just plain interested.
+          <p> <input type="radio" id="liquidOrCalories2" name="liquidOrCalories" value="Calorie Intake" /> Calorie Intake 
+        </div>
+      </form> 
+
+      {% if toGraph_liquid == 1 %}
+        <p> <div id="barchart_liquid"></div> 
+      {% endif %}
+
+      {% if toGraph_calorie == 1 %}
+        <p> <div id="barchart_calorie"></div>
+      {% endif %}
+
+      <form action="/storeliqData" method="post" oninput="contentdiff.value=parseInt(lastcontent.value)-parseInt(recentcontent.value)">
+        <p> <input type="hidden" value="{{ whichtracker }}" name="liquidOrCaloriesHiddenInput" id="liquidOrCaloriesHiddenInput" />
+        <input type="hidden" value="{{ counter_liquid }}" id="indexer_liquid" name="indexer_liquid" />
+        <input type="hidden" value="{{ counter_calorie }}" id="indexer_calorie" name="indexer_calorie" />
+        <input type="hidden" value="{{ prevOrFirst_liquid }}" id="pOF_liquid" name="pOF_liquid" />
+        <input type="hidden" value="{{ prevOrFirst_calorie }}" id="pOF_calorie" name="pOF_calorie" />
+        <div class="form-group">
+          <label for="datepicker" id="mutableDateLabel" name="mutableDateLabel"></label> <input type="text" id="datepicker" name="datepicker" style="text-align: center; visibility: hidden"></p>
+          <!-- value="{{ toJavascriptDateCurrent }} -->
+        </div>
+        <div class="form-group">  
+          {% if prevOrFirst_liquid == "first" %}
+              <label for="lastcontent" id="mutableLabel"></label>
+              <input type="number" id="lastcontent" name="lastcontent" value="" style="text-align: center; width: 350px; visibility: hidden" />
+          {% else %}
+              <label for="lastcontent" id="mutableLabel"></label>
+              <input type="number" id="lastcontent" name="lastcontent" value="{{ diffentry }}" style="text-align: center; visibility: hidden" />
+          {% endif %}
+
+          {% if whichtracker == "Liquid Intake" %}
+            {% if prevOrFirst_liquid == "first" %}
+              <label for="lastcontent" id="mutableLabel_calorie1"></label>
+              <input type="number" id="lastcontent" name="lastcontent" value="" style="text-align: center; width: 350px; visibility: hidden" />
+            {% else %}
+              <label for="lastcontent" id="mutableLabel_calorie1"></label>
+              <input type="number" id="lastcontent" name="lastcontent" value="{{ diffentry }}" style="text-align: center; visibility: hidden" />
+            {% endif %}
+          {% endif %}
+
+          {% if whichtracker == "Calorie Intake" %}
+            {% if prevOrFirst_calorie == "first" %}
+              <label for="lastcontent" id="mutableLabel_calorie1"></label>
+              <input type="number" id="lastcontent" name="lastcontent" value="" style="text-align: center; width: 350px; visibility: hidden" />
+            {% else %}
+              <label for="lastcontent" id="mutableLabel_calorie1"></label>
+              <input type="number" id="lastcontent" name="lastcontent" value="{{ diffentry }}" style="text-align: center; visibility: hidden" />
+            {% endif %}
+          {% endif %}
+        </div>
+        <div class="form-group">
+          <!-- Enter recent liquid intake: -->
+          <label for="recentcontent" id="mutableLabel_1_2"></label>
+          <input type="hidden" value="{{ whichuser }}" name="user_name" />
+          <input type="number" id="recentcontent" name="recentcontent" rows="3" cols="60" style="text-align: center; visibility: hidden" />
+        </div>
+        <div class="form-group">
+          <!-- Remaining liquid intake for today:  -->
+          <label for="contentdiff" id="mutableLabel_1_3"></label>
+          <input type="text" id="contentdiff" name="contentdiff" for="lastcontent recentcontent" style="text-align: center; visibility: hidden"/>
+          <input type="submit" id="storebutton" name="storebutton" value="Store data" style="visibility: hidden" />
+        </div>
+      </form>
+
+    </body>
+
+    <br>
+    <font class="bs-example" size="2">&copy; <i>Scott Trocchia (2014)</i> </font>
+    <br>
+    &nbsp;
+</html> 
